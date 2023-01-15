@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/SettingsBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SettingsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/arrow_return"
+            style="@style/ArrowBack"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_margin="20dp"
+            android:contentDescription="@string/arrow_back"
+            android:src="@drawable/arrow_back_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:text="@string/settings"
+            android:textColor="?attr/colorOnSecondary"
+            android:textSize="@dimen/font_size" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        style="@style/SettingsMenuLayout"
+        android:layout_marginTop="24dp"
+        android:paddingEnd="8dp">
+
+        <TextView
+            style="@style/SettingsMenuText"
+            android:text="@string/dark_theme" />
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/shareButton"
+        style="@style/SettingsMenuLayout"
+        android:paddingEnd="18dp">
+
+        <TextView
+            style="@style/SettingsMenuText"
+            android:text="@string/share" />
+
+        <ImageView
+            style="@style/SettingsMenuIcons"
+            android:layout_width="16dp"
+            android:layout_height="18dp"
+            android:contentDescription="@string/share"
+            android:src="@drawable/share_icon" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/supportButton"
+        style="@style/SettingsMenuLayout"
+        android:paddingEnd="12dp">
+
+        <TextView
+            style="@style/SettingsMenuText"
+            android:text="@string/support" />
+
+        <ImageView
+            style="@style/SettingsMenuIcons"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/support"
+            android:src="@drawable/support_light_mode" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/agreementButton"
+        style="@style/SettingsMenuLayout"
+        android:paddingEnd="20dp">
+
+        <TextView
+            style="@style/SettingsMenuText"
+            android:text="@string/agreement" />
+
+        <ImageView
+            style="@style/SettingsMenuIcons"
+            android:layout_width="8dp"
+            android:layout_height="14dp"
+            android:contentDescription="@string/agreement"
+            android:src="@drawable/arrow_forward_icon" />
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/SearchBackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SearchActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/arrow_return"
+            style="@style/ArrowBack"
+            android:layout_width="@dimen/arrow_back_size"
+            android:layout_height="@dimen/arrow_back_size"
+            android:layout_margin="20dp"
+            android:contentDescription="@string/arrow_back"
+            android:src="@drawable/arrow_back_icon" />
+
+        <TextView
+            style="@style/SecondaryTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:text="@string/search"
+            android:textColor="?attr/colorOnSecondary"
+            android:textSize="@dimen/font_size" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/container"
+        style="@style/SearchBox"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            style="@style/SearchBox"
+            android:layout_width="@dimen/search_icon_size"
+            android:layout_height="@dimen/search_icon_size"
+            android:layout_gravity="center"
+            android:layout_marginStart="13dp"
+            android:layout_marginEnd="9dp"
+            android:contentDescription="@string/search"
+            android:src="@drawable/search_icon" />
+
+        <EditText
+            android:id="@+id/inputEditText"
+            style="@style/SearchBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:hint="@string/search"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLength="30"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <ImageView
+            android:id="@+id/clearIcon"
+            style="@style/SearchBox"
+            android:layout_width="@dimen/clear_icon_size"
+            android:layout_height="@dimen/clear_icon_size"
+            android:layout_gravity="center"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="@string/clear_icon"
+            android:src="@drawable/close_clear_cancel_icon"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/errorPlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/placeholderErrorImage"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/placeholderMessage"
+            style="@style/ErrorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/renewButton"
+            style="@style/RenewButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/renew"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_items"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>
