@@ -20,4 +20,7 @@
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="no_connection">Проблемы со связью\n\nЗагрузка не удалась. Проверьте\nподключение к интернету</string>
     <string name="renew">Обновить</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="search_history">Вы искали</string>
+    <string name="placeholder_image">Artwork not downloaded yet</string>
 </resources>

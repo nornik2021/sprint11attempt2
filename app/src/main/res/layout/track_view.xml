@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     context=".SearchActivity"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -70,7 +71,8 @@
             android:src="@drawable/ellipse_icon"
             app:layout_constraintEnd_toStartOf="@+id/source_track_durTation"
             app:layout_constraintStart_toEndOf="@+id/source_artist_name"
-            app:layout_constraintTop_toBottomOf="@+id/source_track_name" />
+            app:layout_constraintTop_toBottomOf="@+id/source_track_name"
+            tools:ignore="UnknownId" />
 
         <TextView
             android:id="@+id/source_track_duration"

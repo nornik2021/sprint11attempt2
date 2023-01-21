@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/arrow_return"
+            android:id="@+id/returnToMain"
             style="@style/ArrowBack"
             android:layout_width="@dimen/arrow_back_size"
             android:layout_height="@dimen/arrow_back_size"
@@ -52,7 +52,7 @@
             android:src="@drawable/search_icon" />
 
         <EditText
-            android:id="@+id/inputEditText"
+            android:id="@+id/enteringText"
             style="@style/SearchBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             android:singleLine="true" />
 
         <ImageView
-            android:id="@+id/clearIcon"
+            android:id="@+id/clear"
             style="@style/SearchBox"
             android:layout_width="@dimen/clear_icon_size"
             android:layout_height="@dimen/clear_icon_size"
@@ -88,19 +88,20 @@
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/placeholderErrorImage"
+            android:id="@+id/errorImage"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/placeholder_image" />
 
         <TextView
-            android:id="@+id/placeholderMessage"
+            android:id="@+id/phMessage"
             style="@style/ErrorMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/renewButton"
+            android:id="@+id/refreshButton"
             style="@style/RenewButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -110,8 +111,55 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/searchHistory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/ErrorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="20dp"
+            android:overScrollMode="never"
+            android:text="@string/search_history" />
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSearchHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/buttonClearHistory"
+                    style="@style/RenewButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="24dp"
+                    android:overScrollMode="never"
+                    android:text="@string/clear_history" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_items"
+        android:id="@+id/rvResults"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="24dp" />

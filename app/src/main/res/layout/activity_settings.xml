@@ -14,7 +14,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/arrow_return"
+            android:id="@+id/returnToMain"
             style="@style/ArrowBack"
             android:layout_width="16dp"
             android:layout_height="16dp"
@@ -33,21 +33,17 @@
 
     </LinearLayout>
 
-    <FrameLayout
-        style="@style/SettingsMenuLayout"
-        android:layout_marginTop="24dp"
-        android:paddingEnd="8dp">
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/themeSwitcher"
+        style="@style/SettingsMenuText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:paddingHorizontal="16dp"
+        android:text="@string/dark_theme"
+        app:thumbTint="@color/yp_text_gray"
+        app:trackTint="@color/yp_light_gray"/>
 
-        <TextView
-            style="@style/SettingsMenuText"
-            android:text="@string/dark_theme" />
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end" />
-
-    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/shareButton"

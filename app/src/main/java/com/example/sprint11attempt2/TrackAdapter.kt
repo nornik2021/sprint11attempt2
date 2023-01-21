@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class TrackAdapter():RecyclerView.Adapter<TracksViewHolder>() {
+class TrackAdapter(private val searchHistory: SearchHistory):RecyclerView.Adapter<TracksViewHolder>() {
 
     var tracks = ArrayList<Track>()
 
@@ -17,6 +17,12 @@ class TrackAdapter():RecyclerView.Adapter<TracksViewHolder>() {
 
     override fun onBindViewHolder(holder: TracksViewHolder, position: Int) { // здесь происходит установка значений UI компонент из модели данных
         holder.bind(tracks[position]) // вызываем bind созданный в TracksViewHolder, и передаем в качестве параметра объект tracs
+        holder.itemView.setOnClickListener {
+
+            searchHistory.saveItem(tracks[position])
+
+
+        }
     }
 
     override fun getItemCount(): Int { // возвращает количество элементов списка
