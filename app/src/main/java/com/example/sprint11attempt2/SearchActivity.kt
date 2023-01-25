@@ -2,7 +2,7 @@ package com.example.sprint11attempt2
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,189 +11,237 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
-class SearchActivity:AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
 
-    private var userInputSearchText =""
 
-    private val iTunesBaseUrl = "https://itunes.apple.com" // переменная с указанием URL
+    private var inputSearchText = ""
+    private val resultsTracksList = ArrayList<Track>()
+    private lateinit var resultsTrackAdapter: TrackAdapter
+    private lateinit var historyTrackAdapter: TrackAdapter
+    private lateinit var sharedPrefsListener: SharedPreferences.OnSharedPreferenceChangeListener // добавили переменную сссылающуюся на шаред преференс
+    private lateinit var enteringText: EditText
+    private lateinit var errorPlaceholder: LinearLayout
+    private lateinit var phMessage: TextView
+    private lateinit var errorImage: ImageView
+    private lateinit var clearButton: ImageView
+    private lateinit var refreshButton: Button
+    private lateinit var returnToMain: ImageView
+    private lateinit var searchHistoryViewGroup: LinearLayout
+    private lateinit var buttonClearHistory: Button
 
-    private val retrofit = Retrofit.Builder() // подключаем библиотеку ретрофит
+    private lateinit var recyclerHistoryTrackList: RecyclerView
+    private lateinit var recyclerResultsTrackList: RecyclerView
 
-        .baseUrl(iTunesBaseUrl)// передаем базовый URL всех запросов через метод baseUrl
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val itunesService = retrofit.create(ITunesSearchApi::class.java)// инициализируем сервис
-
-    private val tracksList= ArrayList<Track>() // подключаем дата класс Track
-    private val trackAdapter=TrackAdapter()// подключаем адаптер
-
-    private lateinit var searchInput: EditText // переменная с отложенной инициализацией с указанием типа
-    private lateinit var errorPlaceholder: LinearLayout // переменная с отложенной инициализацией с указанием типа
-    private lateinit var placeholderMessage: TextView // переменная с отложенной инициализацией с указанием типа
-    private lateinit var placeholderImage: ImageView // переменная с отложенной инициализацией с указанием типа
-    private lateinit var clearButton: ImageView // переменная с отложенной инициализацией с указанием типа
-    private lateinit var renewButton: Button // переменная с отложенной инициализацией с указанием типа
-    private lateinit var arrowReturn: ImageView // переменная с отложенной инициализацией с указанием типа
-    // переменные с отложенной инициализацией нужны для того что бы не проверять на ноль
-
-    override fun onCreate(savedInstanceState: Bundle?) { // функция которая задает начальную установку параметров
+    override fun onCreate(savedInstanceState: Bundle?) {  // функция которая задает начальную установку параметров
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        setContentView(R.layout.activity_search) // ссылается на activity_search
 
-        initView()
 
-        arrowReturn.setOnClickListener { // слушатель нажатия возврат на активити маин
-         val returnIntent = Intent(this,MainActivity::class.java)
-            startActivity(returnIntent)
+        val sharedPrefs = App.instance.sharedPrefs // ссылаемся на переменную с шаред преф
+        val searchHistory = SearchHistory(sharedPrefs)
+        resultsRecycler(searchHistory)
+        historyRecycler(searchHistory, sharedPrefs)
+        installView()
+
+        returnToMain.setOnClickListener { // обработчик нажатия кнопки
+            finish()
         }
 
-        clearButton.setOnClickListener {
-            searchInput.setText("")
+        clearButton.setOnClickListener {// обработчик нажатия кнопки
+            enteringText.setText("") // ложим пустой текст
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(searchInput.windowToken,0)
-            tracksList.clear()
-            trackAdapter.notifyDataSetChanged()
-        }
-        renewButton.setOnClickListener {
-            errorPlaceholder.visibility = View.GONE
-            renewButton.visibility = View.GONE
-            iTunesSearch()
+            inputMethodManager?.hideSoftInputFromWindow(enteringText.windowToken, 0)
+            resultsTracksList.clear() // очищаем треклист
+            resultsTrackAdapter.notifyDataSetChanged() // метод адаптера который сообщает что нужно список
+            // перерисовать согласно новым данным
 
         }
-        searchInput.setOnEditorActionListener { _, actionId, _ ->
+
+        refreshButton.setOnClickListener {// обработчик нажатия кнопки
+            errorPlaceholder.visibility = View.GONE
+            refreshButton.visibility = View.GONE
+            iTunesSearch()
+        }
+
+        enteringText.setOnEditorActionListener { _, actionId, _ -> // прослушиватель, который будет вызываться при выполнении действия в текстовом
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if (searchInput.text.isNotEmpty()) {
+                if (enteringText.text.isNotEmpty()) {
                     iTunesSearch()
                 }
             }
             false
         }
-        val searchTextWatcher= object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        val searchTextWatcher = object : TextWatcher { // метод до того как ввели текст
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { //  метод вызывается до изменений
                 errorPlaceholder.visibility = View.GONE
-                renewButton.visibility = View.GONE
+                refreshButton.visibility = View.GONE
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { // символы, начинающиеся с start , только что заменили старый текст длиной before
                 clearButton.visibility = clearButtonVisibility(s)
-                userInputSearchText = s.toString()
+                inputSearchText = s.toString()
+                searchHistoryViewGroup.visibility =
+                    if (
+                        enteringText.hasFocus() &&
+                        s?.isEmpty() == true &&
+                        searchHistory.tracksHistory.isNotEmpty()
+                    ) View.VISIBLE else View.GONE
             }
 
-            override fun afterTextChanged(s: Editable?) {
-
+            override fun afterTextChanged(s: Editable?) { // этот есть
             }
         }
-        searchInput.addTextChangedListener (searchTextWatcher)
+        enteringText.addTextChangedListener(searchTextWatcher) // добавили прослушиватель измененного текста
 
-        trackAdapter.tracks = tracksList
+        enteringText.setOnFocusChangeListener { view, hasFocus -> //Определение интерфейса для обратного вызова, который будет вызываться при изменении состояния фокуса представления
+            searchHistoryViewGroup.visibility =
+                if (
+                    hasFocus &&
+                    enteringText.text.isEmpty() &&
+                    searchHistory.tracksHistory.isNotEmpty()
+                ) View.VISIBLE else View.GONE
+        }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view_items) // переменная ссылается на список, который будет выведен на экран
-        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = trackAdapter
+        buttonClearHistory.setOnClickListener {
+            searchHistory.deleteItems()
+            searchHistoryViewGroup.visibility = View.GONE
+        }
+    }
+
+    private fun historyRecycler(
+        searchHistory: SearchHistory,
+        sharedPrefs: SharedPreferences
+    ) {
+        historyTrackAdapter = TrackAdapter(searchHistory)
+        searchHistory.loadTracksFromJson()
+        historyTrackAdapter.tracks = searchHistory.tracksHistory
+
+        sharedPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener{ _, key ->
+            if (key == SEARCH_HISTORY_KEY) historyTrackAdapter.notifyDataSetChanged()
+        }
+        sharedPrefs.registerOnSharedPreferenceChangeListener(sharedPrefsListener)
+
+        recyclerHistoryTrackList = findViewById(R.id.rvSearchHistory)
+        recyclerHistoryTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerHistoryTrackList.adapter = historyTrackAdapter
+    }
+
+    private fun resultsRecycler(searchHistory: SearchHistory) { // добавили рециклер вью для результата поиска
+        resultsTrackAdapter = TrackAdapter(searchHistory)
+        resultsTrackAdapter.tracks = resultsTracksList
+
+        recyclerResultsTrackList = findViewById(R.id.rvResults)
+        recyclerResultsTrackList.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerResultsTrackList.adapter = resultsTrackAdapter
+    }
+
+
+    private fun installView() {
+
+        returnToMain = findViewById(R.id.returnToMain) //  стрелка - возврат назад
+        enteringText = findViewById(R.id.enteringText) // поле для ввода текта в поиск
+        errorPlaceholder = findViewById(R.id.errorPlaceholder) // поле отображения ошибки поиска
+        phMessage = findViewById(R.id.phMessage) // поле отображения текста ошибки поиска
+        errorImage = findViewById(R.id.errorImage) // отображение картинки ошибки поиска
+        refreshButton = findViewById(R.id.refreshButton) // отображение кнопки обновить
+        clearButton = findViewById(R.id.clear) // отображение крестика для стирания текста
+        searchHistoryViewGroup = findViewById(R.id.searchHistory) // поле история поиска
+        buttonClearHistory = findViewById(R.id.buttonClearHistory)// кнопка обновить
+    }
+
+
+  companion object {
+        const val SEARCH_TEXT = "SEARCH_TEXT"
+        const val SEARCH_HISTORY_KEY = "key_for_search_history"
 
     }
 
-    private fun initView() { // метод начальный вид
-        arrowReturn = findViewById(R.id.arrow_return) //  стрелка - возврат назад
-        searchInput = findViewById(R.id.inputEditText) // поле для ввода текта в поиск
-        errorPlaceholder = findViewById(R.id.errorPlaceholder) // отображение ошибки
-        placeholderMessage = findViewById(R.id.placeholderMessage) // отображение текста
-        placeholderImage = findViewById(R.id.placeholderErrorImage) // отображение картинки ошибки
-        renewButton = findViewById(R.id.renewButton) // отображение кнопки обновить
-        clearButton = findViewById(R.id.clearIcon) // отображение крестика для стирания текста
-    }
-
-    companion object{
-        const val SEARCH_TEXT = "SEARCH_TEXT" // постоянная переменная для ключа
-    }
-
-    private fun  iTunesSearch() {
-        itunesService
-            .search(searchInput.text.toString())// ищем текст
-            .enqueue(object : Callback<TracksResponse>{
-                @SuppressLint("NotifyDataSetChanged")
-                override fun onResponse(
-                    call: Call<TracksResponse>,
-                    response: Response<TracksResponse>
-                ) {
-                    if (response.code() == 200) {
-                        tracksList.clear()
-                    if (response.body()?.searchResults?.isNotEmpty() == true) {
-                        tracksList.addAll(response.body()?.searchResults!!)
-                        trackAdapter.notifyDataSetChanged()
-                    }
-                    if (tracksList.isEmpty()) {
-                        negativeResultMessage(NegativeResultMessage.NOTHING_FOUND)
-                    }
-                } else {
-                        negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
-                    }
-                }
-
-                /**
-                 * Invoked when a network exception occurred talking to the server or when an unexpected exception
-                 * occurred creating the request or processing the response.
-                 */
-                override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                    negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION)
-                }
-            })
-    }
-
-    enum class NegativeResultMessage {
+    enum class NegativeResultMessage { //   отображение видимости картинки
         NOTHING_FOUND,
         ERROR_CONNECTION
     }
 
+
+   private fun iTunesSearch() {
+        ApiURL.itunesService
+            .search(enteringText.text.toString())  // ищем текст
+            .enqueue(object : Callback<TracksResponse> { // что бы вызвать запрос мы используем метод enqueue
+
+                @SuppressLint("NotifyDataSetChanged")
+                override fun onResponse( // метод вызывается когда сервер дал ответ на наш запрос
+                    call: Call<TracksResponse>, // очищаем треклист
+                    response: Response<TracksResponse>
+                ) {
+                    if (response.code() == 200) { // если респонс код равен 200
+                        resultsTracksList.clear()
+
+                        if (response.body()?.searchResults?.isNotEmpty() == true) { // метод body() возвращает результат в виде объекта кот. указан в Call
+                            // если запрос был удачным - получаем ответ в JSON тексте
+                            resultsTracksList.addAll(response.body()?.searchResults!!) // добавляем все в треклист результаты поиска
+                            resultsTrackAdapter.notifyDataSetChanged() // добавляем результаты поиска в трек адаптер
+                        }
+                        if (resultsTracksList.isEmpty()) { // если треклист пуст
+                            negativeResultMessage(NegativeResultMessage.NOTHING_FOUND) // вызываем функцию и показываем картинку что ничего не найдено
+                        }
+                    } else {
+                        negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION) // в остальных случаях показываем картинку нет соединения
+                    }
+                }
+
+                override fun onFailure(call: Call<TracksResponse>, t: Throwable) { // метод вызывается когда не смогли установить соединение с сервером
+                    negativeResultMessage(NegativeResultMessage.ERROR_CONNECTION) // выводим ошибку
+                }
+            })
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
     private fun negativeResultMessage(errorCode: NegativeResultMessage) {
         errorPlaceholder.visibility = View.VISIBLE
-        tracksList.clear()
-        trackAdapter.notifyDataSetChanged()
-        when (errorCode) { // когда код ошибки
-            NegativeResultMessage.NOTHING_FOUND -> { //NOTHING_FOUND
-                placeholderMessage.text = getString(R.string.nothing_found) // выводим сообщение и картинку
-                Glide.with(placeholderImage)
+        resultsTracksList.clear()
+        resultsTrackAdapter.notifyDataSetChanged()
+        when (errorCode) {
+            NegativeResultMessage.NOTHING_FOUND -> {
+                phMessage.text = getString(R.string.nothing_found)
+                Glide.with(errorImage)
                     .load(R.drawable.nothing_found)
-                    .into(placeholderImage)
+                    .into(errorImage)
             }
             NegativeResultMessage.ERROR_CONNECTION -> {
-                placeholderMessage.text = getString(R.string.no_connection)
-                Glide.with(placeholderImage)
+                phMessage.text = getString(R.string.no_connection)
+                Glide.with(errorImage)
                     .load(R.drawable.no_connection)
-                    .into(placeholderImage)
-                renewButton.visibility = View.VISIBLE
-
+                    .into(errorImage)
+                refreshButton.visibility = View.VISIBLE
             }
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {// метод для сохранения промежуточного состояния активности
+    override fun onSaveInstanceState(outState: Bundle) { // метод для сохранения промежуточного состояния активности
         super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_TEXT, userInputSearchText)// ключь и выдаваемое значение
+        outState.putString(SEARCH_TEXT, inputSearchText) // ключь и выдаваемое значение
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {// метод для востановления данных которые переданы в onSaveInstanceState
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) { // метод для востановления данных которые переданы в onSaveInstanceState
         super.onRestoreInstanceState(savedInstanceState)
-        userInputSearchText = savedInstanceState.getString(SEARCH_TEXT,"")
+        inputSearchText = savedInstanceState.getString(SEARCH_TEXT, "")
     }
+
     private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) { // возвратить если isNullOrEmpty - значки не видимы
+        return if (s.isNullOrEmpty()) {
             View.GONE
-        }else {
-            View.VISIBLE // в другом случае - видимы
+        } else {
+            View.VISIBLE
         }
     }
-
 }

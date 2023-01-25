@@ -5,15 +5,35 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sprint11attempt2.App.Companion.DARK_THEME_SWITCHER_OFF
+import com.example.sprint11attempt2.App.Companion.DARK_THEME_SWITCHER_ON
+import com.example.sprint11attempt2.App.Companion.THEME_SWITCHER
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+        App.PLAYLIST_MAKER_PREFERENCES
+        DARK_THEME_SWITCHER_OFF
+        DARK_THEME_SWITCHER_ON
 
+        val sharedPrefs = getSharedPreferences(App.PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE) // переменная с SP
         val share = findViewById<FrameLayout>(R.id.shareButton)
         val support = findViewById<FrameLayout>(R.id.supportButton)
         val readAgreement = findViewById<FrameLayout>(R.id.agreementButton)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+
+        themeSwitcher.isChecked = (applicationContext as App).darkTheme
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            if (sharedPrefs.getString(THEME_SWITCHER, "") == DARK_THEME_SWITCHER_ON) {
+                sharedPrefs.edit().putString(THEME_SWITCHER, DARK_THEME_SWITCHER_OFF).apply()
+            } else {
+                sharedPrefs.edit().putString(THEME_SWITCHER, DARK_THEME_SWITCHER_ON).apply()
+            }
+        }
 
         share.setOnClickListener {
             val link = getString(R.string.share_link)
@@ -45,4 +65,10 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(readAgreementIntent)
         }
     }
+
+ /*   companion object {
+        const val THEME_SWITCHER = "THEME_SWITCHER"
+        const val DARK_THEME_SWITCHER_ON = "on"
+        const val DARK_THEME_SWITCHER_OFF = "off"
+    }*/
 }
