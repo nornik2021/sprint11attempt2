@@ -15,7 +15,7 @@
 
         <ImageView
             android:id="@+id/returnToMain"
-            style="@style/ArrowBack"
+            style="@style/return_arrow"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_margin="20dp"

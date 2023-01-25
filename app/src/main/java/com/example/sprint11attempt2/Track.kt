@@ -7,5 +7,12 @@ data class Track( // создаем обьект для плучения дан�
     val trackName: String,
     val artistName: String,
     @SerializedName("trackTimeMillis") val trackTime: Long, // аннотация для указания какие ключи нужно искать
-    val artworkUrl100: String
-)
+    val artworkUrl100:String,
+    val collectionName: String, //Название альбома
+    val releaseDate: String, // Год релиза трека
+    val primaryGenreName: String, // Жанр трека
+    val country: String, // Страна исполнителя
+
+) {
+    fun getArtworkUrl() = artworkUrl100.replaceAfterLast('/',"512x512.jpg")
+}

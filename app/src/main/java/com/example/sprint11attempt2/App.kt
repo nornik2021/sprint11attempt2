@@ -4,10 +4,14 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.gson.Gson
 
 class App : Application() {  // переключение на темную тему
 
     lateinit var sharedPrefs: SharedPreferences
+        private set
+
+    lateinit var gson: Gson
         private set
 
     var darkTheme = false
@@ -16,6 +20,7 @@ class App : Application() {  // переключение на темную те�
         super.onCreate()
         instance = this
         sharedPrefs = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+        gson = Gson()
 
         if (sharedPrefs.getString(THEME_SWITCHER, "") == "") {
             when (this.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
@@ -51,7 +56,7 @@ class App : Application() {  // переключение на темную те�
        const val THEME_SWITCHER = "THEME_SWITCHER"
        const val DARK_THEME_SWITCHER_ON = "on"
        const val DARK_THEME_SWITCHER_OFF = "off"
-       const val SEARCH_HISTORY_KEY = "key_for_search_history"
+
 
         const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"
         lateinit var instance: App

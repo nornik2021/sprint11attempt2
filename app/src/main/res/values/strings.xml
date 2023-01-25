@@ -23,4 +23,12 @@
     <string name="clear_history">Очистить историю</string>
     <string name="search_history">Вы искали</string>
     <string name="placeholder_image">Artwork not downloaded yet</string>
+    <string name="duration">Длительность</string>
+    <string name="collection_name">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="country">Страна</string>
+    <string name="playlist_icon">Playlist icon</string>
+    <string name="play">Play track icon</string>
+    <string name="favorite_list_icon">Favorite list icon</string>
 </resources>
