@@ -66,9 +66,4 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
- /*   companion object {
-        const val THEME_SWITCHER = "THEME_SWITCHER"
-        const val DARK_THEME_SWITCHER_ON = "on"
-        const val DARK_THEME_SWITCHER_OFF = "off"
-    }*/
 }

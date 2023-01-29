@@ -121,7 +121,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistory: SearchHistory,
         sharedPrefs: SharedPreferences
     ) {
-        historyTrackAdapter = TrackAdapter(searchHistory)
+        historyTrackAdapter = TrackAdapter(this, searchHistory)
         searchHistory.loadTracksFromJson()
         historyTrackAdapter.tracks = searchHistory.tracksHistory
 
@@ -137,7 +137,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun resultsRecycler(searchHistory: SearchHistory) { // добавили рециклер вью для результата поиска
-        resultsTrackAdapter = TrackAdapter(searchHistory)
+        resultsTrackAdapter = TrackAdapter( this,searchHistory)
         resultsTrackAdapter.tracks = resultsTracksList
 
         recyclerResultsTrackList = findViewById(R.id.rvResults)

@@ -32,8 +32,10 @@
         <item name="android:background">?attr/colorSecondary</item>
     </style>
 
-    <style name="ArrowBack">
+    <style name="return_arrow">
         <item name="tint">?attr/colorOnSecondary</item>
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">16dp</item>
     </style>
 
     <style name="SecondaryTitle">
@@ -114,5 +116,38 @@
     <style name="SearchItemIcon">
         <item name="tint">?attr/colorSecondaryVariant</item>
     </style>
+
+    <style name="trackTitle">
+        <item name="android:textSize">22sp</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="fontWeight">400</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+    </style>
+
+    <style name="artist_name">
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="fontWeight">400</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+    </style>
+
+    <style name="PTText">
+        <item name="android:textSize">13sp</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
+        <item name="android:textColor">@color/yp_text_gray</item>
+    </style>
+
+    <style name="PTValues">
+        <item name="android:textSize">13sp</item>
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="fontWeight">400</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+    </style>
+
+
+
+
+
 
 </resources>
